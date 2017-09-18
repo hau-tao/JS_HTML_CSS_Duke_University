@@ -1,0 +1,39 @@
+//I started with the image I wanted (inImage)
+var inImage = new SimpleImage("rodger.png");
+//I made a blank image (outImage), twice as wide+tall
+var outImage = new SimpleImage(inImage.getWidth() *2, inImage.getHeight() *2);
+//for each pixel in outImage
+for (var pixel of outImage.values()) {
+  // computed x = floor(pixel's x /2)
+  var x = pixel.getX() ;
+  var y = pixel.getY();
+  //var inPixel = inImage.getPixel(xOut,yOut);
+  if( x >= inImage.getWidth() && y < inImage.getHeight()){
+      var inPixel = inImage.getPixel( x - inImage.getWidth(), y);
+      pixel.setRed(inPixel.getRed());
+      pixel.setGreen(inPixel.getGreen());
+      pixel.setBlue(inPixel.getBlue());
+  }
+  //var inPixel = inImage.getPixel(xOut,yOut);
+  if( x < inImage.getWidth() && y >=inImage.getHeight()){
+      var inPixel = inImage.getPixel( x , y - inImage.getHeight());
+      pixel.setRed(inPixel.getRed()); 
+      pixel.setGreen(inPixel.getGreen());
+      pixel.setBlue(inPixel.getBlue());
+  }
+  if( x >= inImage.getWidth() && y >=inImage.getHeight()){
+      var inPixel = inImage.getPixel( x-inImage.getWidth() , y - inImage.getHeight());
+      pixel.setRed(inPixel.getRed()); 
+      pixel.setGreen(inPixel.getGreen());
+      pixel.setBlue(inPixel.getBlue());
+  }
+  if( x < inImage.getWidth() && y <inImage.getHeight()){
+      var inPixel = inImage.getPixel( x , y );
+      pixel.setRed(inPixel.getRed()); 
+      pixel.setGreen(inPixel.getGreen());
+      pixel.setBlue(inPixel.getBlue());
+  }
+  
+}
+print(outImage);
+

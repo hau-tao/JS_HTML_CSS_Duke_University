@@ -1,0 +1,136 @@
+// steganography
+function pixchange(pixval){
+    var x = Math.floor(pixval/4) *4 ;
+    return x;
+}
+function chop2hide(image){
+    
+    for(var px of image.values()){
+        px.setRed(pixchange(px.getRed()));
+        px.setGreen(pixchange(px.getGreen()));
+        px.setBlue(pixchange(px.getBlue()));
+    }
+    return image;
+}
+function shift(im){
+  var nim = new SimpleImage(im.getWidth(), 
+                            im.getHeight());
+  for(var px of im.values()){
+    var x = px.getX();
+    var y = px.getY();
+    var npx = nim.getPixel(x,y);
+    npx.setRed(Math.floor(px.getRed()/64));
+    npx.setGreen(Math.floor(px.getGreen()/64));
+    npx.setBlue(Math.floor(px.getBlue()/64));
+  }
+  return nim;
+}
+//crop the image
+function crop(image,width,height){
+    var cropped = new SimpleImage(width,height);
+    for(var px of cropped.values()){
+        var x = px.getX();
+        var y = px.getY();
+        var pixel = image.getPixel(x,y);
+        px.setRed(pixel.getRed());
+        px.setGreen(pixel.getGreen());
+        px.setBlue(pixel.getBlue());
+    } 
+    return cropped;
+}
+//combine 
+function combine(image1,image2){
+    var stegImage = new SimpleImage(image1.getWidth(), image2.getHeight());
+    for(var pix of stegImage.values()){
+        var x = pix.getX();
+        var y = pix.getY();
+        var pixel2 = image2.getPixel(x,y);
+        var pixel1 = image1.getPixel(x,y);
+        pix.setRed(newpv(pixel1.getRed(),pixel2.getRed()));
+        pix.setGreen(newpv(pixel1.getGreen(),pixel2.getGreen()));
+        pix.setBlue(newpv(pixel1.getBlue(),pixel2.getBlue()));
+    }
+    return stegImage;
+    
+}
+//helper function of combine function called new(p,q) to add p,q
+function newpv(p,q){
+    var sum = p+q;
+    if (sum > 255){
+        print("it shoule not be greater than 255");
+    }
+    return sum;
+}
+function extract(image){
+    var extractedImage =new SimpleImage(image.getWidth(), image.getHeight());
+    for (var pixel of extractedImage.values())
+    {   var x = pixel.getX();
+        var y = pixel.getY();
+        
+        var combinePixel = image.getPixel(x,y);
+    
+        var a = pixchange(combinePixel.getRed());
+        var b = pixchange(combinePixel.getGreen());
+        var c = pixchange(combinePixel.getBlue());
+        
+        var extractedFactorRed = (combinePixel.getRed() - a)*64;
+        var extractedFactorGreen =(combinePixel.getGreen() - b)*64;
+        var extractedFactorBlue =(combinePixel.getBlue() - c)*64;
+        
+        // set the extracted picture;
+        pixel.setRed(extractedFactorRed);
+        pixel.setGreen(extractedFactorGreen);
+        pixel.setBlue(extractedFactorBlue);
+        
+     
+    }
+    return extractedImage;
+    
+}
+
+var start = new SimpleImage("astrachan.jpg");
+var hide = new SimpleImage("MessageCSEveryone.jpg");
+// test the value of inital start image
+print("Red at (42,42)");
+var sPixel = start.getPixel(42,42);
+print (sPixel.getRed());
+// test the value of inital hide image
+print("Red at (42,42)");
+var hidePixel = hide.getPixel(42,42);
+print (hidePixel.getRed());
+
+print(start);
+print(hide);
+hide = crop(hide,240,360);
+print(hide);
+
+start = chop2hide(start);
+hide = shift(hide);
+
+
+var combine = combine(start,hide);
+print(combine);
+
+//testing after calling chop2hide
+print("Red at(42,42) after calling chop2Hide function")
+var chop2HideStart = start.getPixel(42,42);
+print (chop2HideStart.getRed());
+// test the value of  hide image after calling shift function
+print("Red at (42,42) after calling shift");
+var shiftPixel = hide.getPixel(42,42);
+print (shiftPixel.getRed());
+// test the value of  hide image after calling combine function
+print("Red at (42,42) after calling combine function");
+var combinePixel = combine.getPixel(42,42);
+print (combinePixel.getRed());
+
+// extracted Image function comes here
+//var startExtracted = chop2hide(combine);
+var i1 = new SimpleImage("zxhYgxb.png")
+var extractedImage = extract(i1);
+print("Extracted Image is below ");
+print(extractedImage);
+
+
+
+
